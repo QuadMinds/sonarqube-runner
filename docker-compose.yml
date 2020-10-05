@@ -38,7 +38,7 @@ services:
     image: sonarsource/sonar-scanner-cli
     networks:
       - sonarnet
-    volumes: ['/XXXXX/example:/usr/src']
+    volumes: ['/XXXX/example:/usr/src']
     environment:
       - SONAR_HOST_URL=http://sonarqube:9000
 
