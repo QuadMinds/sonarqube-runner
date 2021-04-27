@@ -12,9 +12,7 @@ before_scan() {
     echo -e "\e[0m🤖 Restore packages"
     NPM_CACHE=$(mktemp -d)
     PROJECT_DIR=${TMP_DIR}/quadminds-events
-    mkdir -p "${NPM_CACHE}/_locks"
-    mkdir -p "${NPM_CACHE}/_config"
-    mkdir -p "${NPM_CACHE}/_cache" 
+    mkdir -p "${NPM_CACHE}/_locks" "${NPM_CACHE}/_config" "${NPM_CACHE}/_cache" 
 	docker run \
         --rm \
         --interactive \
@@ -50,7 +48,7 @@ before_scan() {
         --volume "${PROJECT_DIR}:/app" \
         --user ${LUID}:${LGID} \
         --cap-add=FOWNER \
-        qm-events-cov    
+        qm-events-cov
     echo
     docker run \
         --rm \

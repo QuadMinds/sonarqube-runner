@@ -26,15 +26,8 @@ setup:
 	@echo "📝 Update credentials" \
 		&& docker run -it --rm --network=sonarqube_sonarnet \
 			jbergknoff/postgresql-client \
-				postgresql://sonar:sonar@sonarqube-db:5432/sonar -c "\x" -c "update users set reset_password=false where login = 'admin'";
-# @curl -X POST -u admin:admin \
-# 	-d "login=admin" \
-# 	-d "password=admin1" \
-# 	-d "previousPassword=admin" http://localhost:9999/api/users/change_password 
-# @curl -X POST -u admin:1admin \
-# 	-d "login=admin" \
-# 	-d "password=admin" \
-# 	-d "previousPassword=admin" http://localhost:9999/api/users/change_password 
+				postgresql://sonar:sonar@sonarqube-db:5432/sonar -c "\x" -c "update users set reset_password=false where login = 'admin'" &>/dev/null;
+	@touch $(TS)/setup
 
 $(TS)/setup:
 	@$(MAKE) -s -f $(THIS_FILE) docker/build || (echo '⛔ Fail target $@ ⛔'; exit 1;)
