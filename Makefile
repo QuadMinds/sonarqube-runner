@@ -22,7 +22,7 @@ $(TS)/pull: docker-compose.yml
 setup: ## 🏭 Setup containers.
 setup: pull start $(TS)/setup
 setup:
-	@echo "⌛ Wait for service" && ./waituntil.sh
+	@echo "⌛ Wait for service" && ./src/waituntil.sh
 	@echo "📝 Update credentials" \
 		&& docker run -it --rm --network=sonarqube_sonarnet \
 			jbergknoff/postgresql-client \
@@ -65,37 +65,37 @@ clean: docker/clean
 .PHONY: cdev2
 cdev2: ## 📳 Analize cdev2.
 cdev2: setup
-	@./cdev2.sh
+	@./src/cdev2.sh | tee ${PWD}/logs/cdev2.log
 
 .PHONY: flash
 flash: ## ⚡ Analize flash.
 flash: setup
-	@./flash.sh
+	@./src/flash.sh | tee ${PWD}/logs/flash.log
 
 .PHONY: saas
 saas: ## 🚚 Analize saas.
 saas: setup
-	@./saas.sh
+	@./src/saas.sh | tee ${PWD}/logs/saas.log
 
 .PHONY: falcon
 falcon: ## 🛸 Analize falcon.
 falcon: setup
-	@./falcon.sh
+	@./src/falcon.sh | tee ${PWD}/logs/falcon.log
 
 .PHONY: qm-events
 qm-events: ## 💠 Analize qm-events.
 qm-events: setup
-	@./qm-events.sh	
+	@./src/qm-events.sh | tee ${PWD}/logs/qm-events.log
 
 .PHONY: stork
 stork: ## 📅 Analize stork.
 stork: setup
-	@./stork.sh	
+	@./src/stork.sh	| tee ${PWD}/logs/stork.log
 
 .PHONY: t_and_t
 t_and_t: ## 🎁 Analize track & trace.
 t_and_t: setup
-	@./t_and_t.sh	
+	@./src/t_and_t.sh | tee ${PWD}/logs/t_and_t.log
 
 ##
 ## Utils
