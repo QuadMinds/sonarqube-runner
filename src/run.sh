@@ -47,7 +47,7 @@ before_scan
 echo
 
 echo -e "\e[1;32m🔍 Run sonarqube scanner in ${TMP_DIR}\e[0m"
-U_ID=${LUID} G_ID=${LGID} PROJECT_SOURCE=${TMP_DIR} docker-compose up --build scanner
+UID=${LUID} GID=${LGID} PROJECT_SOURCE=${TMP_DIR} docker-compose up --build scanner
 echo
 
 echo -e "🚀 Finish"
