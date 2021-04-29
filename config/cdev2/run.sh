@@ -1,12 +1,15 @@
 # Download and untar Android SDK tools
 mkdir -p /app/android-sdk-linux \
     && wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O tools.zip \
-    && unzip tools.zip -d /app/android-sdk-linux \
+    && unzip tools.zip -o -d /app/android-sdk-linux \
     && rm tools.zip
 
 # Set environment variable
 export ANDROID_HOME=/app/android-sdk-linux
 export PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${PATH}
+
+chmod 777 -R ${ANDROID_HOME}
+chmod 777 -R /app
 
 # Make license agreement
 mkdir ${ANDROID_HOME}/licenses \
@@ -25,9 +28,11 @@ yes | ${ANDROID_HOME}/tools/bin/sdkmanager --licenses
 
 ./gradlew lintKotlin
 ./gradlew detekt
-./gradlew app:testDebugUnitTest
-./gradlew passengertransfer:testDebugUnitTest
-./gradlew common:testDebugUnitTest
-./gradlew core:testDebugUnitTest
-./gradlew tracing:testDebugUnitTest
+# ./gradlew app:testDebugUnitTest
+# ./gradlew passengertransfer:testDebugUnitTest
+# ./gradlew common:testDebugUnitTest
+# ./gradlew core:testDebugUnitTest
+# ./gradlew tracing:testDebugUnitTest
+
+./gradlew cleanBuildCache
 ./gradlew app:assembleRelease -Penvironment='git'

@@ -5,6 +5,7 @@ CONFIG_PATH=${PWD}/config/cdev2
 
 before_scan() {
     # openjdk:8-alpine
+    # thyrlian/android-sdk
 
     mkdir -p ${PWD}/.ts/.gradle ${PWD}/.ts/android-sdk-linux /${PWD}/.ts/.android
     PROJECT_DIR=${TMP_DIR}/control-entregas-v2
@@ -23,7 +24,7 @@ before_scan() {
         --cap-add=FOWNER \
         --entrypoint /bin/sh \
         --workdir /app \
-        thyrlian/android-sdk -c "/app/scripts/run.sh;"    
+        openjdk:8-alpine -c "/app/scripts/run.sh;"    
 }
 
 # Run script

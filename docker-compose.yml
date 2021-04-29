@@ -41,7 +41,7 @@ services:
       - postgresql_data:/var/lib/postgresql/data
     
   scanner:
-    user: ${U_ID}:${G_ID}
+    user: ${UID}:${GID}
     depends_on:
       - sonarqube
       - sonarqube-db      

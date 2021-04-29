@@ -24,9 +24,6 @@ fi
 echo -e "📦 git version: $(git --version) ✔️\e[0m" || ( error_msg ERROR FALTA GIT; exit 1; )
 echo
 
-# Init directories
-mkdir -p ${TMP_DIR}
-
 # Clone sources
 git_clone ${TMP_DIR} ${BRANCH} ${PRODUCT}
 echo
@@ -42,6 +39,8 @@ U_ID=${LUID}
 G_ID=${LGID} 
 PROJECT_SOURCE=${TMP_DIR}
 EOT
+
+chmod 777 -R ${TMP_DIR}
 
 # Before scan
 before_scan

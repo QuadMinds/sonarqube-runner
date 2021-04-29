@@ -12,6 +12,9 @@ CONTAINER-LIST = $(shell cat $(TS)/container-list 2>/dev/null)
 .PHONY: pull
 pull: ## 🛒 Pull docker images.
 pull: docker-compose.yml $(TS)/pull
+pull:
+	@mkdir -p $(TS)
+	@touch $(TS)/pull
 
 $(TS)/pull: docker-compose.yml
 	@$(MAKE) -s -f $(THIS_FILE) docker/pull || (echo '⛔ Fail target $@ ⛔'; exit 1;)
@@ -30,6 +33,8 @@ setup:
 	@touch $(TS)/setup
 
 $(TS)/setup:
+	@sudo sysctl -w vm.max_map_count=262144 
+	@sudo sysctl -w fs.file-max=65536
 	@$(MAKE) -s -f $(THIS_FILE) docker/build || (echo '⛔ Fail target $@ ⛔'; exit 1;)
 	@$(MAKE) -s -f $(THIS_FILE) start || (echo '⛔ Fail target $@ ⛔'; exit 1;)
 	@mkdir -p $(TS)
@@ -48,6 +53,10 @@ stop: docker/stop
 status: ## 📊 Show docker status.
 status: docker/ps
 
+logs: ## 🔬 Shows the logs of the development environment.
+logs: DOCKER-ACTION=logs -f
+logs: docker
+
 .PHONY: config
 config: ## 📄 Show config.
 config: docker/config 
@@ -55,7 +64,8 @@ config: docker/config
 .PHONY: clean
 clean: ## 🚿 Clean the build artifacts.
 clean: docker/clean
-	@rm -rf $(TS)
+	@rm -rf $(TS) \
+			.env
 
 ##
 ## Projects
@@ -103,6 +113,12 @@ t_and_t: setup
 ##
 
 ##  
+## 🌐 Browser.
+## 
+open-browser:
+	@URL="http://localhost:9999"; xdg-open $${URL} || sensible-browser $${URL} || x-www-browser $${URL} || gnome-open $${URL}
+
+##  
 ## 🐳 Docker targets.
 ## 
 
@@ -142,7 +158,7 @@ docker: $(TS)/container-list
 		exit 0; \
 	else \
 		export UID=${UID} GID=${GID} DOCKER_BUILDKIT=1 PROJECT_SOURCE=${PWD}; \
-	 ( ((echo ${DOCKER-ACTION} | grep -q -v down) \
+	 ( ((echo ${DOCKER-ACTION} | grep -q -v -E '(down|build|pull|ps|stop|logs|exec)') \
 	 	&& docker-compose up \
 	 		--remove-orphans \
 	 		--no-recreate \
