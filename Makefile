@@ -27,9 +27,9 @@ setup: pull start $(TS)/setup
 setup:
 	@echo "⌛ Wait for service" && ./src/waituntil.sh && sleep 2
 	@echo "📝 Update credentials" \
-		&& docker run -it --rm --network=sonarqube_sonarnet \
+		&& docker run --rm --network=sonarqube_sonarnet \
 			jbergknoff/postgresql-client \
-				postgresql://sonar:sonar@sonarqube-db:5432/sonar -c "\x" -c "update users set reset_password=false where login = 'admin'" &>/dev/null;
+				postgresql://sonar:sonar@sonarqube-db:5432/sonar -c "\x" -c "update users set reset_password=false where login = 'admin'" &>/dev/null;	
 	@touch $(TS)/setup
 
 $(TS)/setup:

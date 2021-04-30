@@ -34,11 +34,6 @@ echo
 echo -e "\e[1;32m💾 Copy config\e[0m"
 echo
 cp --force ${CONFIG_PATH}/sonar-scanner.properties ${TMP_DIR}
-cat <<EOT > .env
-U_ID=${LUID} 
-G_ID=${LGID} 
-PROJECT_SOURCE=${TMP_DIR}
-EOT
 
 chmod 777 -R ${TMP_DIR}
 
