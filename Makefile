@@ -1,5 +1,5 @@
-UID := $(shell id -u)
-GID := $(shell id -g)
+LUID := $(shell id -u)
+LGID := $(shell id -g)
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 TS=.ts
 CONTAINER-LIST = $(shell cat $(TS)/container-list 2>/dev/null)
@@ -25,7 +25,7 @@ $(TS)/pull: docker-compose.yml
 setup: ## 🏭 Setup containers.
 setup: pull start $(TS)/setup
 setup:
-	@echo "⌛ Wait for service" && ./src/waituntil.sh
+	@echo "⌛ Wait for service" && ./src/waituntil.sh && sleep 2
 	@echo "📝 Update credentials" \
 		&& docker run -it --rm --network=sonarqube_sonarnet \
 			jbergknoff/postgresql-client \
@@ -65,7 +65,8 @@ config: docker/config
 clean: ## 🚿 Clean the build artifacts.
 clean: docker/clean
 	@rm -rf $(TS) \
-			.env
+			.env \
+			logs/*.log
 
 ##
 ## Projects
@@ -75,37 +76,50 @@ clean: docker/clean
 .PHONY: cdev2
 cdev2: ## 📳 Analize cdev2.
 cdev2: setup
+	@mkdir -p ${PWD}/logs
 	@./src/cdev2.sh | tee ${PWD}/logs/cdev2.log
 
 .PHONY: flash
 flash: ## ⚡ Analize flash.
 flash: setup
+	@mkdir -p ${PWD}/logs
 	@./src/flash.sh | tee ${PWD}/logs/flash.log
 
 .PHONY: saas
 saas: ## 🚚 Analize saas.
 saas: setup
+	@mkdir -p ${PWD}/logs
 	@./src/saas.sh | tee ${PWD}/logs/saas.log
 
 .PHONY: falcon
 falcon: ## 🛸 Analize falcon.
 falcon: setup
+	@mkdir -p ${PWD}/logs
 	@./src/falcon.sh | tee ${PWD}/logs/falcon.log
 
 .PHONY: qm-events
 qm-events: ## 💠 Analize qm-events.
 qm-events: setup
+	@mkdir -p ${PWD}/logs
 	@./src/qm-events.sh | tee ${PWD}/logs/qm-events.log
 
 .PHONY: stork
 stork: ## 📅 Analize stork.
 stork: setup
+	@mkdir -p ${PWD}/logs
 	@./src/stork.sh	| tee ${PWD}/logs/stork.log
 
 .PHONY: t_and_t
 t_and_t: ## 🎁 Analize track & trace.
 t_and_t: setup
+	@mkdir -p ${PWD}/logs
 	@./src/t_and_t.sh | tee ${PWD}/logs/t_and_t.log
+
+.PHONY: fleet
+fleet: ## 🔌 Analize fleet-listener.
+fleet: setup
+	@mkdir -p ${PWD}/logs
+	@./src/fleet.sh | tee ${PWD}/logs/fleet.log 
 
 ##
 ## Utils
@@ -148,7 +162,7 @@ docker/ps: docker
 
 .PHONY: docker/config
 docker/config: ## 🐳 Show docker-compose config.
-	@export UID=${UID} GID=${GID}; \
+	@export LUID=${LUID} LGID=${LGID}; \
 	 docker-compose config
 
 .PHONY: docker
@@ -157,7 +171,7 @@ docker: $(TS)/container-list
 	@if [ "x_${DOCKER-ACTION}_x" = "x__x" ] || [ "x_${CONTAINER-LIST}_x" = "x__x" ]; then \
 		exit 0; \
 	else \
-		export UID=${UID} GID=${GID} DOCKER_BUILDKIT=1 PROJECT_SOURCE=${PWD}; \
+		export LUID=${LUID} LGID=${LGID} DOCKER_BUILDKIT=1 PROJECT_SOURCE=${PWD}; \
 	 ( ((echo ${DOCKER-ACTION} | grep -q -v -E '(down|build|pull|ps|stop|logs|exec)') \
 	 	&& docker-compose up \
 	 		--remove-orphans \

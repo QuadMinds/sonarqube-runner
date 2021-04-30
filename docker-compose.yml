@@ -41,11 +41,11 @@ services:
       - postgresql_data:/var/lib/postgresql/data
     
   scanner:
-    user: ${UID}:${GID}
+    user: ${LUID}:${LGID}
     depends_on:
       - sonarqube
       - sonarqube-db      
-    image: sonarsource/sonar-scanner-cli
+    image: sonarsource/sonar-scanner-cli:4.6
     networks:
       - sonarnet
     volumes: 
